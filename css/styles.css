@@ -859,6 +859,8 @@ textarea:focus {
 .work-card__thumb {
   aspect-ratio: 16 / 10;
   background: var(--surface-2);
+  background-size: cover;
+  background-position: top center;
 }
 .work-card--large .work-card__thumb {
   aspect-ratio: 16 / 14;
@@ -994,6 +996,8 @@ textarea:focus {
 .project-card__thumb {
   aspect-ratio: 16 / 10;
   background: var(--surface-2);
+  background-size: cover;
+  background-position: top center;
 }
 .project-card:first-child .project-card__thumb {
   aspect-ratio: 16 / 14;
@@ -1055,6 +1059,8 @@ textarea:focus {
 .project-panel__screenshot-placeholder {
   aspect-ratio: 16 / 10;
   background: var(--surface-2);
+  background-size: cover;
+  background-position: top center;
   border-radius: var(--radius-lg);
 }
 .project-panel__title {
@@ -1084,6 +1090,18 @@ textarea:focus {
   font-size: var(--text-base);
   color: var(--ink);
 }
+.project-panel__visit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--space-lg);
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--primary);
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+.project-panel__visit:hover { opacity: 0.7; }
 
 /* ------------------------------------------------------------
    24. Contact
