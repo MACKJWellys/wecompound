@@ -703,14 +703,19 @@ function initCountUp() {
 function animateCounter(el, target) {
   const duration = 1500;
   const start = performance.now();
+  const strip = el.closest('.stats-strip');
+  if (strip) strip.classList.add('is-counting');
 
   function update(now) {
     const elapsed = now - start;
     const progress = Math.min(elapsed / duration, 1);
-    // Ease out cubic
     const eased = 1 - Math.pow(1 - progress, 3);
     el.textContent = Math.floor(eased * target);
-    if (progress < 1) requestAnimationFrame(update);
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    } else if (strip) {
+      setTimeout(() => strip.classList.remove('is-counting'), 400);
+    }
   }
 
   requestAnimationFrame(update);
