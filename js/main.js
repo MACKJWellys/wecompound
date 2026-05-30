@@ -326,29 +326,32 @@ function initGSAP() {
       });
     });
 
-    // Mini bar chart animation (scroll-driven, hockey-stick growth)
-    var chart = document.querySelector('.mini-chart');
-    if (chart) {
-      var bars = chart.querySelectorAll('.mini-chart__bar');
-      var vH = 52; // viewBox height
-      // Exponential growth: small, medium, tall, explosive
+    // Mini bar chart animation with echo delay effect
+    var allCharts = document.querySelectorAll('.mini-chart');
+    if (allCharts.length) {
+      var vH = 52;
       var targets = [8, 14, 26, 48];
+      var echoDelays = [0, 0.15, 0.28, 0.39, 0.48];
 
       ScrollTrigger.create({
-        trigger: chart,
+        trigger: allCharts[0],
         start: 'top 82%',
         end: 'top 62%',
         scrub: 0.2,
         onUpdate: function(self) {
           var p = self.progress;
-          // Apply easeOutBack curve for a satisfying pop
-          var ep = p < 1 ? 1 - Math.pow(1 - p, 3) : 1;
-          bars.forEach(function(bar, i) {
-            var stagger = i * 0.12;
-            var bp = Math.max(0, Math.min(1, (ep - stagger) / (1 - stagger)));
-            var h = targets[i] * bp;
-            bar.setAttribute('height', h);
-            bar.setAttribute('y', vH - h);
+          allCharts.forEach(function(chart, ci) {
+            var delay = echoDelays[ci] || 0;
+            var dp = Math.max(0, (p - delay) / (1 - delay));
+            var ep = dp < 1 ? 1 - Math.pow(1 - dp, 3) : 1;
+            var bars = chart.querySelectorAll('.mini-chart__bar');
+            bars.forEach(function(bar, i) {
+              var stagger = i * 0.12;
+              var bp = Math.max(0, Math.min(1, (ep - stagger) / (1 - stagger)));
+              var h = targets[i] * bp;
+              bar.setAttribute('height', h);
+              bar.setAttribute('y', vH - h);
+            });
           });
         },
       });
