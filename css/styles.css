@@ -1030,7 +1030,7 @@ textarea:focus {
   color: var(--ink-muted);
   line-height: 1.5;
   margin-bottom: var(--space-xl);
-  max-width: 600px;
+  max-width: 700px;
 }
 .hero__actions {
   display: flex;
