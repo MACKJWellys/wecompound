@@ -912,10 +912,9 @@ function initCtaAscii() {
     particles.push({
       x: Math.random() * cols | 0,
       y: rows + Math.random() * 4,
-      speed: 0.3 + Math.random() * 0.6,
+      speed: 0.2 + Math.random() * 0.5,
       char: chars[Math.random() * chars.length | 0],
-      life: 1,
-      maxLife: 0.6 + Math.random() * 0.4
+      life: 1
     });
   }
 
@@ -926,44 +925,56 @@ function initCtaAscii() {
 
     for (var i = particles.length - 1; i >= 0; i--) {
       var p = particles[i];
-      p.y -= p.speed * 0.15;
-      var progress = 1 - (p.y / rows);
-      p.life = Math.max(0, progress > 0.7 ? 1 - ((progress - 0.7) / 0.3) : (progress < 0.1 ? progress / 0.1 : 1));
+      p.y -= p.speed * 0.12;
+      // yPct: 0 = bottom, 1 = top
+      var yPct = 1 - (p.y / rows);
 
-      if (p.y < -2 || p.life <= 0) {
+      // Dense at bottom, fade aggressively — gone by 40% up (above button area)
+      var fade;
+      if (yPct < 0.05) {
+        fade = yPct / 0.05;
+      } else if (yPct < 0.25) {
+        fade = 1;
+      } else if (yPct < 0.45) {
+        fade = 1 - ((yPct - 0.25) / 0.2);
+      } else {
+        fade = 0;
+      }
+
+      if (p.y < 0 || fade <= 0) {
         particles.splice(i, 1);
         continue;
       }
 
       // Green palette: dark → bright → white at tips
-      var g, r, b;
-      if (progress < 0.5) {
-        r = Math.floor(10 + 24 * (progress / 0.5));
-        g = Math.floor(80 + 117 * (progress / 0.5));
-        b = Math.floor(20 + 74 * (progress / 0.5));
+      var r, g, b;
+      if (yPct < 0.2) {
+        var t = yPct / 0.2;
+        r = Math.floor(10 + 24 * t);
+        g = Math.floor(80 + 117 * t);
+        b = Math.floor(20 + 74 * t);
       } else {
-        var t = (progress - 0.5) / 0.5;
-        r = Math.floor(34 + 221 * t);
+        var t = Math.min(1, (yPct - 0.2) / 0.25);
+        r = Math.floor(34 + 180 * t);
         g = Math.floor(197 + 58 * t);
-        b = Math.floor(94 + 161 * t);
+        b = Math.floor(94 + 130 * t);
       }
 
-      ctx.globalAlpha = p.life * 0.9;
+      ctx.globalAlpha = fade * 0.9;
       ctx.fillStyle = 'rgb(' + r + ',' + g + ',' + b + ')';
       ctx.fillText(p.char, p.x * fontSize + fontSize / 2, p.y * fontSize);
 
-      // Randomly swap character
-      if (Math.random() < 0.03) {
+      if (Math.random() < 0.04) {
         p.char = chars[Math.random() * chars.length | 0];
       }
     }
 
     ctx.globalAlpha = 1;
 
-    // Spawn new particles — denser at edges, sparser in centre
-    var spawnRate = Math.min(cols * 0.15, 6);
+    // Heavy spawn rate — lots of particles at the bottom
+    var spawnRate = Math.min(cols * 0.3, 12);
     for (var s = 0; s < spawnRate; s++) {
-      if (Math.random() < 0.4) spawnParticle();
+      if (Math.random() < 0.6) spawnParticle();
     }
 
     animId = requestAnimationFrame(draw);
