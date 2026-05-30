@@ -583,6 +583,23 @@ textarea:focus {
   border-radius: var(--radius-lg);
   padding: var(--space-2xl);
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cta-ascii {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.12;
+}
+.cta-banner__inner h2,
+.cta-banner__inner .cta-banner__sub,
+.cta-banner__inner .btn-primary {
+  position: relative;
+  z-index: 1;
 }
 
 .cta-banner__inner h2 {

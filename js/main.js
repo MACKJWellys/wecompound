@@ -129,6 +129,7 @@ function initApp() {
   initDynamicYear();
   initScrollToTop();
   initLogoOSpin();
+  initCtaAscii();
 
   // Safety net: force hero elements visible if GSAP animations stall
   setTimeout(() => {
@@ -886,4 +887,98 @@ function initLogoOSpin() {
 
   // Start first cycle after a short delay
   setTimeout(triggerCycle, 2000);
+}
+
+/* ========== CTA ASCII ENERGY FIELD ========== */
+function initCtaAscii() {
+  var canvas = document.querySelector('.cta-ascii');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+
+  var chars = ['$','€','£','%','↑','+','×','·','▲','⬆','∞'];
+  var cols, rows, fontSize = 14;
+  var particles = [];
+  var animId;
+
+  function resize() {
+    var rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+    cols = Math.floor(canvas.width / fontSize);
+    rows = Math.floor(canvas.height / fontSize);
+  }
+
+  function spawnParticle() {
+    particles.push({
+      x: Math.random() * cols | 0,
+      y: rows + Math.random() * 4,
+      speed: 0.3 + Math.random() * 0.6,
+      char: chars[Math.random() * chars.length | 0],
+      life: 1,
+      maxLife: 0.6 + Math.random() * 0.4
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.font = fontSize + 'px monospace';
+    ctx.textAlign = 'center';
+
+    for (var i = particles.length - 1; i >= 0; i--) {
+      var p = particles[i];
+      p.y -= p.speed * 0.15;
+      var progress = 1 - (p.y / rows);
+      p.life = Math.max(0, progress > 0.7 ? 1 - ((progress - 0.7) / 0.3) : (progress < 0.1 ? progress / 0.1 : 1));
+
+      if (p.y < -2 || p.life <= 0) {
+        particles.splice(i, 1);
+        continue;
+      }
+
+      // Green palette: dark → bright → white at tips
+      var g, r, b;
+      if (progress < 0.5) {
+        r = Math.floor(10 + 24 * (progress / 0.5));
+        g = Math.floor(80 + 117 * (progress / 0.5));
+        b = Math.floor(20 + 74 * (progress / 0.5));
+      } else {
+        var t = (progress - 0.5) / 0.5;
+        r = Math.floor(34 + 221 * t);
+        g = Math.floor(197 + 58 * t);
+        b = Math.floor(94 + 161 * t);
+      }
+
+      ctx.globalAlpha = p.life * 0.9;
+      ctx.fillStyle = 'rgb(' + r + ',' + g + ',' + b + ')';
+      ctx.fillText(p.char, p.x * fontSize + fontSize / 2, p.y * fontSize);
+
+      // Randomly swap character
+      if (Math.random() < 0.03) {
+        p.char = chars[Math.random() * chars.length | 0];
+      }
+    }
+
+    ctx.globalAlpha = 1;
+
+    // Spawn new particles — denser at edges, sparser in centre
+    var spawnRate = Math.min(cols * 0.15, 6);
+    for (var s = 0; s < spawnRate; s++) {
+      if (Math.random() < 0.4) spawnParticle();
+    }
+
+    animId = requestAnimationFrame(draw);
+  }
+
+  // Only run when visible
+  var observer = new IntersectionObserver(function(entries) {
+    if (entries[0].isIntersecting) {
+      resize();
+      if (!animId) draw();
+    } else {
+      if (animId) { cancelAnimationFrame(animId); animId = null; }
+    }
+  }, { threshold: 0.1 });
+
+  observer.observe(canvas.parentElement);
+  window.addEventListener('resize', resize);
 }
