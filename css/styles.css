@@ -1230,7 +1230,6 @@ textarea:focus {
   background: var(--surface-1);
   border-top: 1px solid var(--hairline);
   border-bottom: 1px solid var(--hairline);
-  transition: border-color 0.4s ease;
 }
 .stats-strip__grid {
   display: flex;
@@ -1247,16 +1246,6 @@ textarea:focus {
   font-weight: 700;
   color: var(--primary);
   letter-spacing: -0.03em;
-  transition: text-shadow 0.4s ease, filter 0.4s ease;
-}
-.stats-strip.is-counting .stat__number,
-.stats-strip.is-counting .stat__suffix {
-  text-shadow: 0 0 12px var(--primary), 0 0 24px rgba(34, 197, 94, 0.3);
-}
-.stats-strip.is-counting {
-  border-top-color: var(--primary);
-  border-bottom-color: var(--primary);
-  transition: border-color 0.4s ease;
   line-height: 1;
 }
 .stat__suffix {
@@ -1265,7 +1254,6 @@ textarea:focus {
   font-weight: 700;
   color: var(--primary);
   letter-spacing: -0.03em;
-  transition: text-shadow 0.4s ease;
 }
 .stat__label {
   display: block;

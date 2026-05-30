@@ -456,21 +456,31 @@ function initGSAP() {
     const children = section.querySelectorAll('.container > *, .founder__inner > *, .service-detail__inner > *, .contact-grid > *, .cta-banner__inner > *');
     if (children.length === 0) return;
 
-    // CTA banner is near page bottom — use a generous trigger so it always fires
-    const triggerStart = section.classList.contains('cta-banner') ? 'top 98%' : 'top 85%';
-
-    gsap.from(children, {
-      scrollTrigger: {
+    if (section.classList.contains('cta-banner')) {
+      // CTA is near page bottom — use onEnter callback to guarantee it fires
+      gsap.set(children, { opacity: 0, y: 40 });
+      ScrollTrigger.create({
         trigger: section,
-        start: triggerStart,
-        toggleActions: 'play none none none',
-      },
-      opacity: 0,
-      y: 40,
-      duration: 0.8,
-      stagger: 0.1,
-      ease: 'power2.out',
-    });
+        start: 'top 98%',
+        once: true,
+        onEnter: () => {
+          gsap.to(children, { opacity: 1, y: 0, duration: 0.8, stagger: 0.1, ease: 'power2.out' });
+        },
+      });
+    } else {
+      gsap.from(children, {
+        scrollTrigger: {
+          trigger: section,
+          start: 'top 85%',
+          toggleActions: 'play none none none',
+        },
+        opacity: 0,
+        y: 40,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: 'power2.out',
+      });
+    }
   });
 
   // Tooth glint — fires once when founder section is visible
@@ -702,19 +712,38 @@ function initCountUp() {
 
 function animateCounter(el, target) {
   const duration = 1500;
+  const fadeOut = 600;
   const start = performance.now();
-  const strip = el.closest('.stats-strip');
-  if (strip) strip.classList.add('is-counting');
+  const stat = el.closest('.stat');
+  const numEl = el;
+  const suffixEl = stat ? stat.querySelector('.stat__suffix') : null;
+
+  function setGlow(intensity) {
+    var shadow = intensity > 0
+      ? '0 0 ' + (12 * intensity) + 'px var(--primary), 0 0 ' + (24 * intensity) + 'px rgba(34,197,94,' + (0.3 * intensity) + ')'
+      : 'none';
+    numEl.style.textShadow = shadow;
+    if (suffixEl) suffixEl.style.textShadow = shadow;
+  }
 
   function update(now) {
     const elapsed = now - start;
     const progress = Math.min(elapsed / duration, 1);
     const eased = 1 - Math.pow(1 - progress, 3);
     el.textContent = Math.floor(eased * target);
+    // Glow ramps up with progress
+    setGlow(progress);
     if (progress < 1) {
       requestAnimationFrame(update);
-    } else if (strip) {
-      setTimeout(() => strip.classList.remove('is-counting'), 400);
+    } else {
+      // Fade glow back to 0
+      var fadeStart = performance.now();
+      function fadeGlow(now) {
+        var fp = Math.min((now - fadeStart) / fadeOut, 1);
+        setGlow(1 - fp);
+        if (fp < 1) requestAnimationFrame(fadeGlow);
+      }
+      requestAnimationFrame(fadeGlow);
     }
   }
 
