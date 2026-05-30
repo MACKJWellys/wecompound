@@ -470,6 +470,19 @@ function initGSAP() {
     });
   });
 
+  // Tooth glint — fires once when founder section is visible
+  const glint = document.querySelector('.tooth-glint');
+  if (glint) {
+    ScrollTrigger.create({
+      trigger: '.founder',
+      start: 'top 60%',
+      once: true,
+      onEnter: () => {
+        setTimeout(() => glint.classList.add('is-active'), 1500);
+      },
+    });
+  }
+
   // Card stagger animations
   const cardGroups = document.querySelectorAll('.bento-grid, .work-grid, .project-grid');
   cardGroups.forEach(group => {
