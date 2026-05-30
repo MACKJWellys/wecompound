@@ -933,10 +933,10 @@ function initCtaAscii() {
       var fade;
       if (yPct < 0.05) {
         fade = yPct / 0.05;
-      } else if (yPct < 0.25) {
+      } else if (yPct < 0.18) {
         fade = 1;
-      } else if (yPct < 0.45) {
-        fade = 1 - ((yPct - 0.25) / 0.2);
+      } else if (yPct < 0.35) {
+        fade = 1 - ((yPct - 0.18) / 0.17);
       } else {
         fade = 0;
       }
@@ -971,10 +971,10 @@ function initCtaAscii() {
 
     ctx.globalAlpha = 1;
 
-    // Very heavy spawn — packed bottom edge
-    var spawnRate = Math.min(cols * 0.8, 30);
+    // Extremely dense bottom edge
+    var spawnRate = Math.min(cols * 1.5, 50);
     for (var s = 0; s < spawnRate; s++) {
-      if (Math.random() < 0.7) spawnParticle();
+      if (Math.random() < 0.8) spawnParticle();
     }
 
     animId = requestAnimationFrame(draw);
