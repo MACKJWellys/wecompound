@@ -4,33 +4,116 @@ document.addEventListener('DOMContentLoaded', () => {
   initPreloader();
 });
 
-/* ========== PRELOADER — Compounding Spheres ========== */
+/* ========== PRELOADER — Counter Animation ========== */
+var preloaderAnimationDone = false;
+var windowLoaded = false;
+
 function initPreloader() {
   const preloader = document.querySelector('.preloader');
-  if (!preloader) { initApp(); return; }
+  if (!preloader) { onReady(); return; }
 
-  // Start Vanta BEHIND the preloader immediately so there's no flash on dismiss
+  const counter = preloader.querySelector('.preloader__counter');
+
+  // Init Vanta as soon as window loads (independent of animation)
   window.addEventListener('load', () => {
+    windowLoaded = true;
     initVanta();
-    runPreloaderAnimation(preloader);
+    // If animation already finished while waiting for load, dismiss now
+    if (preloaderAnimationDone) dismissPreloader(preloader);
   });
+
+  // Start the counter animation immediately — don't wait for window.load
+  if (counter) runCounterAnimation(preloader, counter);
+  else dismissPreloader(preloader);
 }
 
-function runPreloaderAnimation(preloader) {
-  // Simple wordmark preloader — hold for a beat then dismiss
-  setTimeout(() => {
-    dismissPreloader(preloader);
-  }, 1200);
+function runCounterAnimation(preloader, counter) {
+  var cursor = preloader.querySelector('.preloader__cursor');
+  var typed = preloader.querySelector('.preloader__typed');
+
+  // Type "W" then "e" during cursor blink phase
+  if (typed) {
+    setTimeout(function() { typed.textContent = 'W'; }, 300);
+    setTimeout(function() { typed.textContent = 'We'; }, 750);
+  }
+
+  // 2 cursor blinks (1s) + 0.5s hold with cursor visible, then start counting
+  if (cursor) {
+    setTimeout(function() {
+      cursor.style.animation = 'none';
+      cursor.style.opacity = '1';
+    }, 1000);
+  }
+  setTimeout(function() {
+    counter.textContent = '1';
+    if (cursor) cursor.remove();
+
+    // Phase A: 1→10 over 733ms (snappy, deliberate)
+    // Phase B1: 10→~500k over 500ms (building)
+    // Phase B2: ~500k→1,000,000 over 250ms (burst — saves 250ms)
+    // Compound lingers 550ms (300 + 250 saved)
+    var phaseA = 733;
+    var phaseB1 = 500;
+    var phaseB2 = 250;
+    var start = performance.now();
+    var lastDisplay = -1;
+
+    function tick(now) {
+      var elapsed = now - start;
+      var value;
+
+      if (elapsed < phaseA) {
+        var p = elapsed / phaseA;
+        value = Math.max(1, Math.floor(1 + 9 * Math.pow(p, 2.5)));
+      } else if (elapsed < phaseA + phaseB1) {
+        // First half of explosive phase: 10 → ~500,000
+        var p = (elapsed - phaseA) / phaseB1;
+        value = Math.floor(10 + 499990 * Math.pow(p, 5));
+      } else if (elapsed < phaseA + phaseB1 + phaseB2) {
+        // Second half: ~500,000 → 1,000,000 (much faster)
+        var p = (elapsed - phaseA - phaseB1) / phaseB2;
+        value = Math.floor(500000 + 500000 * Math.pow(p, 3));
+      } else {
+        counter.textContent = 'Compound';
+        preloaderAnimationDone = true;
+        // Linger on "Compound" — saved time added here
+        setTimeout(function() {
+          if (windowLoaded) {
+            dismissPreloader(preloader);
+          } else {
+            window.addEventListener('load', function() {
+              dismissPreloader(preloader);
+            });
+          }
+        }, 550);
+        return;
+      }
+
+      if (value !== lastDisplay) {
+        counter.textContent = value.toLocaleString();
+        lastDisplay = value;
+      }
+      requestAnimationFrame(tick);
+    }
+
+    requestAnimationFrame(tick);
+  }, 1500);
 }
 
 function dismissPreloader(preloader) {
   preloader.classList.add('is-done');
-  preloader.addEventListener('transitionend', () => {
+  preloader.addEventListener('transitionend', function() {
     preloader.remove();
-    initApp();
   }, { once: true });
-  // Fallback if transitionend doesn't fire
-  setTimeout(() => { if (document.contains(preloader)) { preloader.remove(); initApp(); } }, 800);
+  setTimeout(function() { if (document.contains(preloader)) preloader.remove(); }, 600);
+  onReady();
+}
+
+var __appStarted = false;
+function onReady() {
+  if (__appStarted) return;
+  __appStarted = true;
+  initApp();
 }
 
 function initApp() {
@@ -45,6 +128,17 @@ function initApp() {
   initProjectPanels();
   initDynamicYear();
   initScrollToTop();
+  initLogoOSpin();
+
+  // Safety net: force hero elements visible if GSAP animations stall
+  setTimeout(() => {
+    document.querySelectorAll('.hero__title, .hero__title .word, .hero .eyebrow, .hero__sub, .hero__actions, .page-hero .eyebrow, .page-hero__title, .page-hero__sub').forEach(el => {
+      if (getComputedStyle(el).opacity === '0') {
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+      }
+    });
+  }, 1500);
 }
 
 /* ========== LENIS SMOOTH SCROLL ========== */
@@ -84,62 +178,283 @@ function initGSAP() {
   // Hero word-by-word reveal (home page only)
   const heroTitle = document.querySelector('.hero__title');
   if (heroTitle) {
-    const text = heroTitle.textContent;
-    const words = text.split(' ');
-    heroTitle.innerHTML = words.map(w => '<span class="word" style="display:inline-block">' + w + '</span>').join(' ');
+    // Preserve .hero-paid span during word split
+    var text = heroTitle.textContent;
+    var words = text.split(/\s+/).filter(Boolean);
+    heroTitle.innerHTML = words.map(function(w) {
+      if (/^paid/.test(w)) {
+        return '<span class="word" style="display:inline-block"><span class="hero-paid">' + w + '</span></span>';
+      }
+      return '<span class="word" style="display:inline-block">' + w + '</span>';
+    }).join(' ');
 
-    gsap.from('.hero__title .word', {
-      opacity: 0,
-      y: 20,
-      duration: 0.6,
-      stagger: 0.03,
-      ease: 'power2.out',
-      delay: 0.2,
+    gsap.to('.hero .eyebrow', {
+      opacity: 1, y: 0, duration: 0.4, ease: 'power2.out', delay: 0,
     });
 
-    gsap.from('.hero .eyebrow', {
-      opacity: 0,
-      y: 15,
-      duration: 0.6,
-      ease: 'power2.out',
-      delay: 0,
+    gsap.to('.hero__title .word', {
+      opacity: 1, y: 0, duration: 0.5, stagger: 0.04, ease: 'power2.out', delay: 0.15,
     });
 
-    gsap.from('.hero__sub, .hero__actions', {
-      opacity: 0,
-      y: 20,
-      duration: 0.8,
-      ease: 'power2.out',
-      delay: 0.8,
+    gsap.to('.hero__sub, .hero__actions', {
+      opacity: 1, y: 0, duration: 0.5, ease: 'power2.out', delay: 0.6,
     });
+
+    // "paid" / "seen" rotating scramble
+    var paidEl = document.querySelector('.hero-paid');
+    if (paidEl) {
+      var symbols = ['€','£','$','¥'];
+      var words = ['paid', 'seen'];
+      var scrambleSpeed = 60;
+
+      // Rolling wave transition: each letter scrambles then locks to new word,
+      // with the lock trailing 2 positions behind the scramble start
+      function transitionWord(fromWord, toWord, onComplete) {
+        var stepDelay = 200;
+        var lockOffset = 2;
+        var positions = 4;
+        var scrambling = [false, false, false, false];
+        var locked = [false, false, false, false];
+        var state = fromWord.split('');
+
+        for (var p = 0; p < positions; p++) {
+          (function(pos) {
+            setTimeout(function() { scrambling[pos] = true; }, pos * stepDelay);
+            setTimeout(function() {
+              scrambling[pos] = false;
+              locked[pos] = true;
+              state[pos] = toWord[pos];
+            }, (pos + lockOffset) * stepDelay);
+          })(p);
+        }
+
+        var toGreen = (toWord === 'seen');
+        var fromGreen = (fromWord === 'seen');
+
+        var renderInterval = setInterval(function() {
+          var allDone = locked[0] && locked[1] && locked[2] && locked[3];
+          if (allDone) {
+            clearInterval(renderInterval);
+            if (toGreen) {
+              paidEl.innerHTML = '<span style="color:var(--primary)">' + toWord + '.</span>';
+            } else {
+              paidEl.textContent = toWord + '.';
+            }
+            if (onComplete) onComplete();
+            return;
+          }
+          var display = '';
+          for (var i = 0; i < positions; i++) {
+            var ch;
+            if (locked[i]) {
+              ch = toWord[i];
+              if (toGreen) ch = '<span style="color:var(--primary)">' + ch + '</span>';
+            } else if (scrambling[i]) {
+              ch = symbols[Math.floor(Math.random() * symbols.length)];
+            } else {
+              // Still showing old letter — keep green if from "seen"
+              ch = state[i];
+              if (fromGreen) ch = '<span style="color:var(--primary)">' + ch + '</span>';
+            }
+            display += ch;
+          }
+          paidEl.innerHTML = display;
+        }, scrambleSpeed);
+      }
+
+      // Lock width on parent .word span to prevent layout shift during scramble
+      var wordSpan = paidEl.closest('.word');
+      if (wordSpan) {
+        var w = wordSpan.getBoundingClientRect().width;
+        wordSpan.style.width = w + 'px';
+        wordSpan.style.overflow = 'hidden';
+      }
+
+      // Start rotation after hero reveals
+      startRotation();
+
+      function startRotation() {
+        var currentIndex = 0; // currently showing words[0] = "paid"
+        function scheduleNext() {
+          // 5-6s on "paid", 3-4s on "seen"
+          var delay = currentIndex === 0
+            ? 5000 + Math.random() * 1000
+            : 3000 + Math.random() * 1000;
+          setTimeout(function() {
+            var from = words[currentIndex];
+            var nextIndex = (currentIndex + 1) % words.length;
+            var to = words[nextIndex];
+            transitionWord(from, to, function() {
+              currentIndex = nextIndex;
+              scheduleNext();
+            });
+          }, delay);
+        }
+        scheduleNext();
+      }
+    }
   }
 
   // Page hero fade-in (non-home pages: services, work, contact)
   const pageHero = document.querySelector('.page-hero');
   if (pageHero) {
-    gsap.from('.page-hero .eyebrow, .page-hero__title, .page-hero__sub', {
-      opacity: 0,
-      y: 30,
-      duration: 0.8,
-      stagger: 0.1,
-      ease: 'power2.out',
-      delay: 0.1,
+    gsap.to('.page-hero .eyebrow, .page-hero__title, .page-hero__sub', {
+      opacity: 1, y: 0, duration: 0.8, stagger: 0.1, ease: 'power2.out', delay: 0.1,
+    });
+  }
+
+  // Scroll-animated heading underlines (homepage only, skip chart heading)
+  if (document.querySelector('[data-barba-namespace="home"]')) {
+    document.querySelectorAll('.section-title').forEach(function(title) {
+      if (title.classList.contains('section-title--chart')) return; // handled separately
+
+      title.classList.add('section-title--animated');
+
+      ScrollTrigger.create({
+        trigger: title,
+        start: 'top 85%',
+        end: 'top 60%',
+        scrub: 0.3,
+        onUpdate: function(self) {
+          title.style.setProperty('--ul-scale', self.progress);
+        },
+      });
+    });
+
+    // Mini bar chart animation (scroll-driven, hockey-stick growth)
+    var chart = document.querySelector('.mini-chart');
+    if (chart) {
+      var bars = chart.querySelectorAll('.mini-chart__bar');
+      var vH = 52; // viewBox height
+      // Exponential growth: small, medium, tall, explosive
+      var targets = [8, 14, 26, 48];
+
+      ScrollTrigger.create({
+        trigger: chart,
+        start: 'top 82%',
+        end: 'top 62%',
+        scrub: 0.2,
+        onUpdate: function(self) {
+          var p = self.progress;
+          // Apply easeOutBack curve for a satisfying pop
+          var ep = p < 1 ? 1 - Math.pow(1 - p, 3) : 1;
+          bars.forEach(function(bar, i) {
+            var stagger = i * 0.12;
+            var bp = Math.max(0, Math.min(1, (ep - stagger) / (1 - stagger)));
+            var h = targets[i] * bp;
+            bar.setAttribute('height', h);
+            bar.setAttribute('y', vH - h);
+          });
+        },
+      });
+    }
+
+    // Bento card SVG draw-in animation
+    document.querySelectorAll('.bento-grid .card').forEach(function(card, i) {
+      ScrollTrigger.create({
+        trigger: card,
+        start: 'top 85%',
+        once: true,
+        onEnter: function() {
+          setTimeout(function() {
+            card.classList.add('is-drawn');
+          }, i * 120); // stagger across cards
+        },
+      });
+    });
+
+    // "compound" word counter animation — fires once on scroll
+    document.querySelectorAll('.compound-counter').forEach(function(el) {
+      var finalWord = el.getAttribute('data-final') || el.textContent;
+      var hasPlayed = false;
+
+      // Set to "0" immediately so the word doesn't flash before animating
+      el.textContent = '0';
+
+      ScrollTrigger.create({
+        trigger: el,
+        start: 'top 85%',
+        once: true,
+        onEnter: function() {
+          if (hasPlayed) return;
+          hasPlayed = true;
+
+          // Phase A: 0→10 over 400ms (visible ramp)
+          // Phase B: 10→999,999 over 600ms (explosive)
+          var phaseA = 400;
+          var phaseB = 600;
+          var start = performance.now();
+          var lastDisplay = -1;
+
+          function tick(now) {
+            var elapsed = now - start;
+            var value;
+
+            if (elapsed < phaseA) {
+              var p = elapsed / phaseA;
+              value = Math.max(0, Math.floor(10 * Math.pow(p, 2)));
+            } else if (elapsed < phaseA + phaseB) {
+              var p = (elapsed - phaseA) / phaseB;
+              value = Math.floor(10 + 999989 * Math.pow(p, 4));
+            } else {
+              el.textContent = finalWord;
+              return;
+            }
+
+            if (value !== lastDisplay) {
+              el.textContent = value.toLocaleString();
+              lastDisplay = value;
+            }
+            requestAnimationFrame(tick);
+          }
+
+          requestAnimationFrame(tick);
+        },
+      });
+    });
+
+    // Fade-out sections as they scroll off the top (homepage only)
+    var fadeSections = [
+      { sel: '.hero', start: 'bottom 25%', end: 'bottom 10%' },
+      { sel: '.founder', start: 'bottom 45%', end: 'bottom 25%' },
+      { sel: '.services-overview', start: 'bottom 25%', end: 'bottom 10%' },
+      { sel: '.stats-strip', start: 'bottom 25%', end: 'bottom 10%' },
+      { sel: '.featured-work', start: 'bottom 25%', end: 'bottom 10%' },
+    ];
+    fadeSections.forEach(function(cfg) {
+      var section = document.querySelector(cfg.sel);
+      if (!section) return;
+      ScrollTrigger.create({
+        trigger: section,
+        start: cfg.start,
+        end: cfg.end,
+        scrub: 0.15,
+        onUpdate: function(self) {
+          section.style.opacity = 1 - self.progress;
+        },
+        onLeaveBack: function() {
+          section.style.opacity = 1;
+        },
+      });
     });
   }
 
   // Section entrance animations
   const sections = document.querySelectorAll(
-    '.services-overview, .stats-strip, .featured-work, .cta-banner, .service-detail, .contact-section, .portfolio-section'
+    '.founder, .services-overview, .stats-strip, .featured-work, .cta-banner, .service-detail, .contact-section, .portfolio-section'
   );
 
   sections.forEach(section => {
-    const children = section.querySelectorAll('.container > *, .service-detail__inner > *, .contact-grid > *, .cta-banner__inner > *');
+    const children = section.querySelectorAll('.container > *, .founder__inner > *, .service-detail__inner > *, .contact-grid > *, .cta-banner__inner > *');
     if (children.length === 0) return;
+
+    // CTA banner is near page bottom — use a generous trigger so it always fires
+    const triggerStart = section.classList.contains('cta-banner') ? 'top 98%' : 'top 85%';
 
     gsap.from(children, {
       scrollTrigger: {
         trigger: section,
-        start: 'top 85%',
+        start: triggerStart,
         toggleActions: 'play none none none',
       },
       opacity: 0,
@@ -452,4 +767,68 @@ function initScrollToTop() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   });
+}
+
+/* ========== LOGO 'O' DIGIT SPIN ========== */
+function initLogoOSpin() {
+  var logo = document.querySelector('.nav__logo span');
+  if (!logo) return;
+
+  // Wrap the two 'o's in Compound with spans
+  logo.innerHTML = logo.textContent.replace(/o/g, function(match, offset) {
+    return '<span class="logo-o" data-o="true">o</span>';
+  });
+
+  var oSpans = logo.querySelectorAll('.logo-o');
+  if (oSpans.length < 2) return;
+
+  // Lock each 'o' span to its exact measured width so digits never shift surrounding letters
+  oSpans.forEach(function(span) {
+    var w = span.getBoundingClientRect().width;
+    span.style.width = w + 'px';
+  });
+
+  function spinO(el) {
+    var digits = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    var i = 0;
+    var speed = 60;
+
+    el.classList.add('is-digit');
+    var interval = setInterval(function() {
+      el.textContent = digits[i];
+      i++;
+      if (i >= digits.length) {
+        clearInterval(interval);
+        setTimeout(function() {
+          el.textContent = 'o';
+          el.classList.remove('is-digit');
+        }, 80);
+      }
+    }, speed);
+  }
+
+  var isFirstCycle = true;
+
+  function triggerCycle() {
+    // Always spin first 'o'
+    spinO(oSpans[0]);
+
+    // First cycle: always both. After: 33% both, 66% only first.
+    var spinBoth = isFirstCycle || Math.random() < 0.33;
+    if (spinBoth) {
+      var secondDelay = 100 + Math.random() * 900;
+      setTimeout(function() {
+        spinO(oSpans[1]);
+      }, secondDelay);
+    }
+
+    isFirstCycle = false;
+
+    // Schedule next cycle: 10-20s from now
+    var nextCycle = 10000 + Math.random() * 10000;
+    setTimeout(triggerCycle, nextCycle);
+  }
+
+  // Start first cycle after a short delay
+  setTimeout(triggerCycle, 2000);
 }
