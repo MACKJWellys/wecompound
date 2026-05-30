@@ -497,9 +497,8 @@ function initGSAP() {
     });
   }
 
-  // Card stagger animations
-  const cardGroups = document.querySelectorAll('.bento-grid, .work-grid, .project-grid');
-  cardGroups.forEach(group => {
+  // Card stagger animations (bento + project grids)
+  document.querySelectorAll('.bento-grid, .project-grid').forEach(group => {
     const cards = group.children;
     gsap.from(cards, {
       scrollTrigger: {
@@ -515,6 +514,63 @@ function initGSAP() {
       ease: 'power2.out',
     });
   });
+
+  // Work cards — fly in from sides
+  var isMobile = window.innerWidth < 768;
+  var workCards = document.querySelectorAll('.work-card');
+  var workTitle = document.querySelector('.featured-work .section-title');
+
+  workCards.forEach(function(card, i) {
+    var isLarge = card.classList.contains('work-card--large');
+    var fromX;
+    if (isMobile) {
+      fromX = i % 2 === 0 ? -80 : 80;
+    } else {
+      fromX = isLarge ? -80 : 80;
+    }
+
+    gsap.from(card, {
+      scrollTrigger: {
+        trigger: card,
+        start: 'top 85%',
+        toggleActions: 'play none none none',
+      },
+      x: fromX,
+      opacity: 0,
+      duration: 0.9,
+      ease: 'power2.out',
+      delay: isMobile ? 0 : i * 0.1,
+    });
+  });
+
+  // Mobile only: fade title out as first work card scrolls in
+  if (isMobile && workTitle && workCards.length) {
+    gsap.to(workTitle, {
+      scrollTrigger: {
+        trigger: workCards[0],
+        start: 'top 80%',
+        end: 'top 50%',
+        scrub: true,
+      },
+      opacity: 0,
+      duration: 0.5,
+    });
+  }
+
+  // Mobile only: bento card glow on scroll (center of viewport)
+  if (isMobile) {
+    var bentoCards = document.querySelectorAll('.bento-grid .card');
+    var glowObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-glowing');
+        } else {
+          entry.target.classList.remove('is-glowing');
+        }
+      });
+    }, { rootMargin: '-35% 0px -35% 0px' });
+    bentoCards.forEach(function(card) { glowObserver.observe(card); });
+  }
 }
 
 /* ========== VANTA.JS HERO BACKGROUND ========== */
@@ -894,14 +950,16 @@ function initCtaAscii() {
   var canvas = document.querySelector('.cta-ascii');
   if (!canvas) return;
   var ctx = canvas.getContext('2d');
+  var section = canvas.closest('.cta-banner');
 
   var chars = ['$','€','£','%','↑','+','×','·','▲','⬆','∞'];
   var cols, rows, fontSize = 14;
   var particles = [];
   var animId;
+  var startTime = 0;
 
   function resize() {
-    var rect = canvas.parentElement.getBoundingClientRect();
+    var rect = section.getBoundingClientRect();
     canvas.width = rect.width;
     canvas.height = rect.height;
     cols = Math.floor(canvas.width / fontSize);
@@ -913,8 +971,7 @@ function initCtaAscii() {
       x: Math.random() * cols | 0,
       y: rows + Math.random() * 4,
       speed: 0.2 + Math.random() * 0.5,
-      char: chars[Math.random() * chars.length | 0],
-      life: 1
+      char: chars[Math.random() * chars.length | 0]
     });
   }
 
@@ -925,18 +982,18 @@ function initCtaAscii() {
 
     for (var i = particles.length - 1; i >= 0; i--) {
       var p = particles[i];
-      p.y -= p.speed * 0.12;
-      // yPct: 0 = bottom, 1 = top
+      var elapsed = (performance.now() - startTime) / 1000;
+      var speedMult = 1 + 1.5 * Math.min(elapsed / 3, 1);
+      p.y -= p.speed * 0.12 * speedMult;
       var yPct = 1 - (p.y / rows);
 
-      // Dense at bottom, fade aggressively — gone by 40% up (above button area)
       var fade;
       if (yPct < 0.05) {
         fade = yPct / 0.05;
-      } else if (yPct < 0.18) {
+      } else if (yPct < 0.4) {
         fade = 1;
-      } else if (yPct < 0.35) {
-        fade = 1 - ((yPct - 0.18) / 0.17);
+      } else if (yPct < 0.93) {
+        fade = 1 - ((yPct - 0.4) / 0.53);
       } else {
         fade = 0;
       }
@@ -946,18 +1003,17 @@ function initCtaAscii() {
         continue;
       }
 
-      // Green palette: dark → bright → white at tips
       var r, g, b;
-      if (yPct < 0.2) {
-        var t = yPct / 0.2;
+      if (yPct < 0.7) {
+        var t = yPct / 0.7;
         r = Math.floor(10 + 24 * t);
         g = Math.floor(80 + 117 * t);
         b = Math.floor(20 + 74 * t);
       } else {
-        var t = Math.min(1, (yPct - 0.2) / 0.25);
-        r = Math.floor(34 + 180 * t);
+        var t = Math.min(1, (yPct - 0.7) / 0.23);
+        r = Math.floor(34 + 186 * t);
         g = Math.floor(197 + 58 * t);
-        b = Math.floor(94 + 130 * t);
+        b = Math.floor(94 + 136 * t);
       }
 
       ctx.globalAlpha = fade * 0.9;
@@ -971,7 +1027,6 @@ function initCtaAscii() {
 
     ctx.globalAlpha = 1;
 
-    // Extremely dense bottom edge
     var spawnRate = Math.min(cols * 1.5, 50);
     for (var s = 0; s < spawnRate; s++) {
       if (Math.random() < 0.8) spawnParticle();
@@ -980,16 +1035,15 @@ function initCtaAscii() {
     animId = requestAnimationFrame(draw);
   }
 
-  // Only run when visible
   var observer = new IntersectionObserver(function(entries) {
     if (entries[0].isIntersecting) {
       resize();
-      if (!animId) draw();
+      if (!animId) { startTime = performance.now(); draw(); }
     } else {
       if (animId) { cancelAnimationFrame(animId); animId = null; }
     }
   }, { threshold: 0.1 });
 
-  observer.observe(canvas.parentElement);
+  observer.observe(section);
   window.addEventListener('resize', resize);
 }
