@@ -240,6 +240,11 @@ function initGSAP() {
             } else {
               paidEl.textContent = toWord + '.';
             }
+            // Update width lock to fit new word
+            if (wordSpan) {
+              wordSpan.style.width = 'auto';
+              wordSpan.style.width = wordSpan.getBoundingClientRect().width + 'px';
+            }
             if (onComplete) onComplete();
             return;
           }
