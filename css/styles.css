@@ -158,8 +158,7 @@ section {
   display: inline-block;
   min-width: 2ch;
   vertical-align: top;
-  height: 1em;
-  height: 1lh;
+  height: calc(1lh + 0.15em);
   overflow: hidden;
   white-space: nowrap;
 }
