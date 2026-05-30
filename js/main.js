@@ -971,10 +971,10 @@ function initCtaAscii() {
 
     ctx.globalAlpha = 1;
 
-    // Heavy spawn rate — lots of particles at the bottom
-    var spawnRate = Math.min(cols * 0.3, 12);
+    // Very heavy spawn — packed bottom edge
+    var spawnRate = Math.min(cols * 0.8, 30);
     for (var s = 0; s < spawnRate; s++) {
-      if (Math.random() < 0.6) spawnParticle();
+      if (Math.random() < 0.7) spawnParticle();
     }
 
     animId = requestAnimationFrame(draw);
