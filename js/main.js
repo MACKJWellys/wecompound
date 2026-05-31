@@ -332,7 +332,7 @@ function initGSAP() {
     if (allCharts.length) {
       var vH = 52;
       var targets = [8, 14, 26, 48];
-      var echoDelays = [0, 0.15, 0.28, 0.39, 0.48, 0.56, 0.63];
+      var echoDelays = [0, 0.12, 0.22, 0.31, 0.39, 0.46, 0.52, 0.57, 0.62];
 
       ScrollTrigger.create({
         trigger: allCharts[0],
@@ -517,7 +517,7 @@ function initGSAP() {
 
 
   // Mobile only: bento card glow on scroll (center of viewport)
-  if (isMobile) {
+  if (window.innerWidth < 768) {
     var bentoCards = document.querySelectorAll('.bento-grid .card');
     var glowObserver = new IntersectionObserver(function(entries) {
       entries.forEach(function(entry) {
