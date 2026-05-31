@@ -193,6 +193,7 @@ section {
   align-items: flex-end;
   gap: var(--space-md);
   overflow: visible;
+  white-space: nowrap;
 }
 .mini-chart-group {
   display: flex;
@@ -205,14 +206,13 @@ section {
   height: clamp(40px, 5.5vw, 56px);
   flex-shrink: 0;
 }
-.mini-chart--echo[data-echo="1"] { opacity: 0.89; }
-.mini-chart--echo[data-echo="2"] { opacity: 0.78; }
-.mini-chart--echo[data-echo="3"] { opacity: 0.67; }
-.mini-chart--echo[data-echo="4"] { opacity: 0.56; }
-.mini-chart--echo[data-echo="5"] { opacity: 0.45; }
-.mini-chart--echo[data-echo="6"] { opacity: 0.34; }
-.mini-chart--echo[data-echo="7"] { opacity: 0.23; }
-.mini-chart--echo[data-echo="8"] { opacity: 0.12; }
+.mini-chart--echo[data-echo="1"] { opacity: 0.875; }
+.mini-chart--echo[data-echo="2"] { opacity: 0.75; }
+.mini-chart--echo[data-echo="3"] { opacity: 0.625; }
+.mini-chart--echo[data-echo="4"] { opacity: 0.50; }
+.mini-chart--echo[data-echo="5"] { opacity: 0.375; }
+.mini-chart--echo[data-echo="6"] { opacity: 0.25; }
+.mini-chart--echo[data-echo="7"] { opacity: 0.125; }
 .mini-chart__bar {
   fill: var(--primary);
 }
@@ -1704,8 +1704,7 @@ textarea:focus {
   .mini-chart--echo[data-echo="4"],
   .mini-chart--echo[data-echo="5"],
   .mini-chart--echo[data-echo="6"],
-  .mini-chart--echo[data-echo="7"],
-  .mini-chart--echo[data-echo="8"] { display: none; }
+  .mini-chart--echo[data-echo="7"] { display: none; }
   .work-grid { grid-template-columns: 1fr; }
   .work-card--large { grid-row: span 1; }
   .hero__title { font-size: var(--text-2xl); }

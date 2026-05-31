@@ -332,7 +332,7 @@ function initGSAP() {
     if (allCharts.length) {
       var vH = 52;
       var targets = [8, 14, 26, 48];
-      var echoDelays = [0, 0.12, 0.22, 0.31, 0.39, 0.46, 0.52, 0.57, 0.62];
+      var echoDelays = [0, 0.12, 0.22, 0.31, 0.39, 0.46, 0.52, 0.57];
 
       ScrollTrigger.create({
         trigger: allCharts[0],
