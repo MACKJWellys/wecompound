@@ -209,6 +209,8 @@ section {
 .mini-chart--echo[data-echo="2"] { opacity: 0.70; }
 .mini-chart--echo[data-echo="3"] { opacity: 0.55; }
 .mini-chart--echo[data-echo="4"] { opacity: 0.40; }
+.mini-chart--echo[data-echo="5"] { opacity: 0.25; }
+.mini-chart--echo[data-echo="6"] { opacity: 0.10; }
 .mini-chart__bar {
   fill: var(--primary);
 }
@@ -1302,8 +1304,7 @@ textarea:focus {
 }
 .work-grid {
   display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  grid-template-rows: auto auto;
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--space-md);
 }
 .work-card {
@@ -1698,7 +1699,9 @@ textarea:focus {
   .mini-chart-group { gap: clamp(4px, 1vw, 8px); }
   .mini-chart { width: clamp(36px, 8vw, 48px); height: clamp(80px, 18vw, 110px); }
   .mini-chart--echo[data-echo="3"],
-  .mini-chart--echo[data-echo="4"] { display: none; }
+  .mini-chart--echo[data-echo="4"],
+  .mini-chart--echo[data-echo="5"],
+  .mini-chart--echo[data-echo="6"] { display: none; }
   .work-grid { grid-template-columns: 1fr; }
   .work-card--large { grid-row: span 1; }
   .hero__title { font-size: var(--text-2xl); }

@@ -332,7 +332,7 @@ function initGSAP() {
     if (allCharts.length) {
       var vH = 52;
       var targets = [8, 14, 26, 48];
-      var echoDelays = [0, 0.15, 0.28, 0.39, 0.48];
+      var echoDelays = [0, 0.15, 0.28, 0.39, 0.48, 0.56, 0.63];
 
       ScrollTrigger.create({
         trigger: allCharts[0],
@@ -515,47 +515,6 @@ function initGSAP() {
     });
   });
 
-  // Work cards — fly in from sides
-  var isMobile = window.innerWidth < 768;
-  var workCards = document.querySelectorAll('.work-card');
-  var workTitle = document.querySelector('.featured-work .section-title');
-
-  workCards.forEach(function(card, i) {
-    var isLarge = card.classList.contains('work-card--large');
-    var fromX;
-    if (isMobile) {
-      fromX = i % 2 === 0 ? -80 : 80;
-    } else {
-      fromX = isLarge ? -80 : 80;
-    }
-
-    gsap.from(card, {
-      scrollTrigger: {
-        trigger: card,
-        start: 'top 85%',
-        toggleActions: 'play none none none',
-      },
-      x: fromX,
-      opacity: 0,
-      duration: 0.9,
-      ease: 'power2.out',
-      delay: isMobile ? 0 : i * 0.1,
-    });
-  });
-
-  // Mobile only: fade title out as first work card scrolls in
-  if (isMobile && workTitle && workCards.length) {
-    gsap.to(workTitle, {
-      scrollTrigger: {
-        trigger: workCards[0],
-        start: 'top 80%',
-        end: 'top 50%',
-        scrub: true,
-      },
-      opacity: 0,
-      duration: 0.5,
-    });
-  }
 
   // Mobile only: bento card glow on scroll (center of viewport)
   if (isMobile) {
