@@ -205,10 +205,10 @@ section {
   height: clamp(40px, 5.5vw, 56px);
   flex-shrink: 0;
 }
-.mini-chart--echo[data-echo="1"] { opacity: 0.6; }
-.mini-chart--echo[data-echo="2"] { opacity: 0.4; }
-.mini-chart--echo[data-echo="3"] { opacity: 0.2; }
-.mini-chart--echo[data-echo="4"] { opacity: 0.1; }
+.mini-chart--echo[data-echo="1"] { opacity: 0.85; }
+.mini-chart--echo[data-echo="2"] { opacity: 0.70; }
+.mini-chart--echo[data-echo="3"] { opacity: 0.55; }
+.mini-chart--echo[data-echo="4"] { opacity: 0.40; }
 .mini-chart__bar {
   fill: var(--primary);
 }

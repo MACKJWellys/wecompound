@@ -983,7 +983,7 @@ function initCtaAscii() {
     for (var i = particles.length - 1; i >= 0; i--) {
       var p = particles[i];
       var elapsed = (performance.now() - startTime) / 1000;
-      var speedMult = 1 + 1.5 * Math.min(elapsed / 3, 1);
+      var speedMult = 1 + 3 * Math.min(elapsed / 3, 1);
       p.y -= p.speed * 0.12 * speedMult;
       var yPct = 1 - (p.y / rows);
 
