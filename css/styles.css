@@ -1662,7 +1662,143 @@ textarea:focus {
 }
 
 /* ------------------------------------------------------------
-   26. Responsive Breakpoints
+   26. Pricing Page
+   ------------------------------------------------------------ */
+
+/* Pricing Grid */
+.pricing-section { padding-bottom: var(--space-section); }
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+  align-items: start;
+}
+
+/* Pricing Card */
+.pricing-card {
+  background: var(--surface-1);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  position: relative;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+.pricing-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--hairline-strong);
+}
+
+/* Recommended card — green border accent */
+.pricing-card--recommended {
+  border-color: var(--primary);
+  background: var(--surface-2);
+}
+.pricing-card--recommended:hover {
+  border-color: var(--primary-hover);
+}
+.pricing-card--recommended::before {
+  content: 'Recommended';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--primary);
+  color: var(--on-primary);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  padding: 4px 16px;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.pricing-card__tier {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--primary);
+}
+.pricing-card__price {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin: var(--space-sm) 0;
+  line-height: 1.1;
+}
+.pricing-card__price-note {
+  font-size: var(--text-sm);
+  color: var(--ink-subtle);
+  margin-bottom: var(--space-md);
+}
+.pricing-card__tagline {
+  font-size: var(--text-base);
+  color: var(--ink-muted);
+  margin-bottom: var(--space-md);
+  line-height: 1.5;
+}
+.pricing-card__desc {
+  font-size: var(--text-sm);
+  color: var(--ink-subtle);
+  line-height: 1.6;
+  margin-bottom: var(--space-lg);
+}
+.pricing-card__features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+.pricing-card__features li {
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+  padding-left: var(--space-lg);
+  position: relative;
+}
+.pricing-card__features li::before {
+  content: '\2713';
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+  font-weight: 600;
+}
+.pricing-card__note {
+  font-size: var(--text-sm);
+  color: var(--ink-subtle);
+  font-style: italic;
+  margin-bottom: var(--space-lg);
+  line-height: 1.5;
+}
+.pricing-card .btn-primary,
+.pricing-card .btn-secondary {
+  width: 100%;
+  text-align: center;
+}
+
+/* FAQ Section */
+.faq-section { padding-bottom: var(--space-section); }
+.faq-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-xl);
+  margin-top: var(--space-2xl);
+}
+.faq-item__q {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: var(--space-xs);
+}
+.faq-item__a {
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+  line-height: 1.6;
+}
+
+/* ------------------------------------------------------------
+   27. Responsive Breakpoints
    ------------------------------------------------------------ */
 
 /* Mobile — up to 767px */
@@ -1718,6 +1854,8 @@ textarea:focus {
   .project-card:first-child { grid-row: span 1; }
   .project-panel__inner { grid-template-columns: 1fr; }
   .contact-grid { grid-template-columns: 1fr; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .faq-grid { grid-template-columns: 1fr; }
   .page-hero { padding-top: calc(64px + var(--space-2xl)); }
 }
 
@@ -1729,4 +1867,6 @@ textarea:focus {
   }
 
   .bento-grid { grid-template-columns: repeat(2, 1fr); }
+  .pricing-grid { grid-template-columns: 1fr; max-width: 500px; margin: 0 auto; }
+  .faq-grid { grid-template-columns: 1fr 1fr; }
 }
