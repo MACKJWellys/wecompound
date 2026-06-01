@@ -1698,8 +1698,9 @@ textarea:focus {
 
   .bento-grid { grid-template-columns: 1fr; }
   .bento-grid__item--wide { grid-column: span 1; }
+  .section-title--chart { white-space: normal; flex-wrap: wrap; }
   .mini-chart-group { gap: clamp(4px, 1vw, 8px); }
-  .mini-chart { width: clamp(36px, 8vw, 48px); height: clamp(80px, 18vw, 110px); }
+  .mini-chart { width: clamp(32px, 7vw, 44px); height: clamp(36px, 8vw, 48px); }
   .mini-chart--echo[data-echo="3"],
   .mini-chart--echo[data-echo="4"],
   .mini-chart--echo[data-echo="5"],

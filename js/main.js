@@ -336,9 +336,9 @@ function initGSAP() {
 
       ScrollTrigger.create({
         trigger: allCharts[0],
-        start: 'top 82%',
-        end: 'top 62%',
-        scrub: 0.2,
+        start: 'top 50%',
+        end: 'top 15%',
+        scrub: 0.3,
         onUpdate: function(self) {
           var p = self.progress;
           allCharts.forEach(function(chart, ci) {
@@ -516,19 +516,36 @@ function initGSAP() {
   });
 
 
-  // Mobile only: bento card glow on scroll (center of viewport)
+  // Mobile only: single bento card glow — closest to viewport center
   if (window.innerWidth < 768) {
-    var bentoCards = document.querySelectorAll('.bento-grid .card');
-    var glowObserver = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-glowing');
-        } else {
-          entry.target.classList.remove('is-glowing');
+    var bentoCards = Array.from(document.querySelectorAll('.bento-grid .card'));
+    var currentGlow = null;
+
+    function updateGlow() {
+      var centerY = window.innerHeight / 2;
+      var closest = null;
+      var closestDist = Infinity;
+
+      bentoCards.forEach(function(card) {
+        var rect = card.getBoundingClientRect();
+        var cardCenter = rect.top + rect.height / 2;
+        var dist = Math.abs(cardCenter - centerY);
+        if (dist < closestDist && rect.bottom > 0 && rect.top < window.innerHeight) {
+          closest = card;
+          closestDist = dist;
         }
       });
-    }, { rootMargin: '-35% 0px -35% 0px' });
-    bentoCards.forEach(function(card) { glowObserver.observe(card); });
+
+      var shouldGlow = closest && closestDist < window.innerHeight * 0.35 ? closest : null;
+      if (shouldGlow !== currentGlow) {
+        if (currentGlow) currentGlow.classList.remove('is-glowing');
+        if (shouldGlow) shouldGlow.classList.add('is-glowing');
+        currentGlow = shouldGlow;
+      }
+    }
+
+    window.addEventListener('scroll', updateGlow, { passive: true });
+    if (window.__lenis) window.__lenis.on('scroll', updateGlow);
   }
 }
 
@@ -942,7 +959,14 @@ function initCtaAscii() {
     for (var i = particles.length - 1; i >= 0; i--) {
       var p = particles[i];
       var elapsed = (performance.now() - startTime) / 1000;
-      var speedMult = 1 + 3 * Math.min(elapsed / 3, 1);
+      var speedMult;
+      if (elapsed < 3) {
+        speedMult = 1 + 3 * (elapsed / 3);
+      } else if (elapsed < 4.5) {
+        speedMult = 4;
+      } else {
+        speedMult = 10;
+      }
       p.y -= p.speed * 0.12 * speedMult;
       var yPct = 1 - (p.y / rows);
 
