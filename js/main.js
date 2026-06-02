@@ -960,12 +960,12 @@ function initCtaAscii() {
       var p = particles[i];
       var elapsed = (performance.now() - startTime) / 1000;
       var speedMult;
-      if (elapsed < 3) {
-        speedMult = 1 + 3 * (elapsed / 3);
-      } else if (elapsed < 4.5) {
-        speedMult = 4;
+      if (elapsed < 2.5) {
+        speedMult = 0.5 + 2.5 * (elapsed / 2.5);
+      } else if (elapsed < 3) {
+        speedMult = 3 + 5 * ((elapsed - 2.5) / 0.5);
       } else {
-        speedMult = 10;
+        speedMult = 8;
       }
       p.y -= p.speed * 0.12 * speedMult;
       var yPct = 1 - (p.y / rows);
