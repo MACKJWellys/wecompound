@@ -393,15 +393,14 @@
                   <line x1="-6" y1="0" x2="6" y2="0" stroke="#4ade80" stroke-width="2" stroke-linecap="round"/>
                   <line x1="-6" y1="6" x2="2" y2="6" stroke="#4ade80" stroke-width="2" stroke-linecap="round"/>
                 </g>
-                <!-- gear -->
+                <!-- automation / sync loop -->
                 <g transform="translate(150 360)">
                   <rect x="-26" y="-26" width="52" height="52" rx="13" fill="#121417" stroke="#23252a"/>
-                  <circle r="6" fill="none" stroke="#4ade80" stroke-width="2"/>
-                  <g stroke="#4ade80" stroke-width="2" stroke-linecap="round">
-                    <line x1="0" y1="-13" x2="0" y2="-9"/><line x1="0" y1="9" x2="0" y2="13"/>
-                    <line x1="-13" y1="0" x2="-9" y2="0"/><line x1="9" y1="0" x2="13" y2="0"/>
-                    <line x1="-9" y1="-9" x2="-6" y2="-6"/><line x1="6" y1="6" x2="9" y2="9"/>
-                    <line x1="9" y1="-9" x2="6" y2="-6"/><line x1="-6" y1="6" x2="-9" y2="9"/>
+                  <g fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M-10 -2 A 10 10 0 0 1 8 -6"/>
+                    <path d="M3 -11 L9 -6 L4 -1"/>
+                    <path d="M10 2 A 10 10 0 0 1 -8 6"/>
+                    <path d="M-3 11 L-9 6 L-4 1"/>
                   </g>
                 </g>
                 <!-- user/lead -->
