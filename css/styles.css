@@ -1662,6 +1662,32 @@ textarea:focus {
   align-items: start;
 }
 
+/* Pricing intro (landing page section) */
+.pricing-intro {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto var(--space-2xl);
+}
+.pricing-intro__sub {
+  color: var(--ink-muted);
+  font-size: var(--text-base);
+  margin-top: var(--space-sm);
+}
+.pricing-section__more {
+  text-align: center;
+  margin-top: var(--space-xl);
+}
+.pricing-section__more a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--primary);
+  font-weight: 500;
+  text-decoration: none;
+  transition: gap 0.3s ease;
+}
+.pricing-section__more a:hover { gap: 10px; }
+
 /* Pricing Card */
 .pricing-card {
   background: var(--surface-1);
