@@ -1447,6 +1447,16 @@ textarea:focus {
   border-radius: var(--radius-xl);
   border: 1px solid var(--hairline);
 }
+.service-detail__art {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  display: block;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--hairline);
+  background: var(--surface-1);
+  overflow: hidden;
+  box-shadow: 0 24px 60px -32px rgba(0, 0, 0, 0.8);
+}
 .service-detail--featured {
   background: var(--surface-1);
   border-top: 2px solid var(--primary);
