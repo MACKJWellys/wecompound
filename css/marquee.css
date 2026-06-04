@@ -77,23 +77,6 @@
   animation-play-state: paused;
 }
 
-/* Counter-rotating track (used by the mobile mirror row + tools strip). */
-.logo-marquee__track--reverse {
-  animation-direction: reverse;
-}
-
-/* Mobile-only second row: hidden on desktop, shown ≤768px so two strips
-   scroll in opposite directions and reveal more brands at a glance. */
-.logo-marquee__viewport--mobile {
-  display: none;
-}
-@media (max-width: 768px) {
-  .logo-marquee__viewport--mobile {
-    display: block;
-    margin-top: clamp(0.5rem, 2vw, 1rem);
-  }
-}
-
 /* ---- Individual logo slot ---- */
 .brandmark {
   flex: 0 0 auto;
@@ -126,6 +109,7 @@
 .bm-img--dw   { height: 44px; }   /* blue house mark */
 .bm-img--vw   { height: 30px; }   /* long title + tagline */
 .bm-img--cbt  { height: 52px; }   /* stacked CBT in CPT */
+.bm-img--maxim{ height: 46px; }   /* square red M mark */
 
 /* ---- PrivateBusHire Ireland — Barlow Condensed, navy + gold ---- */
 .bm-pbh {
