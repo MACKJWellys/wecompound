@@ -149,6 +149,13 @@
 
           </div>
         </div>
+
+        <!-- Mobile-only second row: mirrors the brands above, scrolls the
+             opposite way so more sites are visible at once on small screens.
+             Populated by JS from the primary track. -->
+        <div class="logo-marquee__viewport logo-marquee__viewport--mobile" aria-hidden="true">
+          <div class="logo-marquee__track logo-marquee__track--reverse" data-marquee-track data-marquee-mirror></div>
+        </div>
       </section>
 
       <!-- FOUNDER PROFILE -->
@@ -643,8 +650,26 @@
       c.setAttribute('aria-hidden', 'true');
       return c;
     }
+    // A track that's display:none (e.g. the mobile-only mirror on desktop)
+    // has no client rects — skip it so we don't measure a zero-width loop.
+    function isHidden(el) { return !el.getClientRects().length; }
+
+    // 0) Mirror rows: copy the originals from their section's primary track
+    //    BEFORE that track gets padded out with clones.
+    Array.prototype.forEach.call(
+      document.querySelectorAll('[data-marquee-mirror]'),
+      function (mirror) {
+        var section = mirror.closest('.logo-marquee');
+        var primary = section && section.querySelector('[data-marquee-track]:not([data-marquee-mirror])');
+        if (!primary) return;
+        Array.prototype.forEach.call(primary.children, function (n) {
+          mirror.appendChild(n.cloneNode(true));
+        });
+      }
+    );
 
     function buildTrack(track) {
+      if (isHidden(track)) return; // hidden mirror on desktop — leave it
       // Keep a pristine copy of the original set.
       var originals = Array.prototype.slice.call(track.children);
       if (!originals.length) return;
@@ -661,9 +686,10 @@
       half.forEach(function (n) { track.appendChild(clone(n)); });
 
       // 3) Tie scroll speed to content width so density stays consistent.
-      var pxPerSec = 70;
+      //    49 px/s = 30% slower than the original 70 px/s.
+      var pxPerSec = 49;
       var halfWidth = track.scrollWidth / 2;
-      track.style.animationDuration = Math.max(18, halfWidth / pxPerSec) + 's';
+      track.style.animationDuration = Math.max(26, halfWidth / pxPerSec) + 's';
     }
 
     var tracks = document.querySelectorAll('[data-marquee-track]');

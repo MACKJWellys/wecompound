@@ -77,6 +77,23 @@
   animation-play-state: paused;
 }
 
+/* Counter-rotating track (used by the mobile mirror row + tools strip). */
+.logo-marquee__track--reverse {
+  animation-direction: reverse;
+}
+
+/* Mobile-only second row: hidden on desktop, shown ≤768px so two strips
+   scroll in opposite directions and reveal more brands at a glance. */
+.logo-marquee__viewport--mobile {
+  display: none;
+}
+@media (max-width: 768px) {
+  .logo-marquee__viewport--mobile {
+    display: block;
+    margin-top: clamp(0.5rem, 2vw, 1rem);
+  }
+}
+
 /* ---- Individual logo slot ---- */
 .brandmark {
   flex: 0 0 auto;
