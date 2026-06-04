@@ -1,0 +1,80 @@
+/* ============================================================
+   WeCompound — LIGHT THEME MOCKUP override
+   Loaded AFTER styles.css. Flips the dark token ladder to a
+   white/light palette so the same components render on white.
+   Quick mockup only — not the production theme.
+   ============================================================ */
+
+:root {
+  /* Surface ladder — inverted to light */
+  --canvas: #ffffff;
+  --surface-1: #f6f7f9;
+  --surface-2: #eef0f3;
+  --surface-3: #e7eaef;
+  --hairline: #e3e6ea;
+  --hairline-strong: #cdd2d9;
+
+  /* Ink — inverted to dark text on light */
+  --ink: #0e1116;
+  --ink-muted: #353b44;
+  --ink-subtle: #5b626b;
+  --ink-tertiary: #888e97;
+
+  /* Brand green kept; nudge default to the deeper shade for
+     contrast on white, hover stays vivid. */
+  --primary: #16a34a;
+  --primary-hover: #22c55e;
+  --primary-focus: #15803d;
+  --on-primary: #ffffff;
+}
+
+/* Hero contrast overlay was a dark radial vignette for white text
+   on black. Flip to a soft white wash so dark hero text stays legible. */
+.hero::after {
+  background: radial-gradient(ellipse at 30% 50%,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.55) 60%,
+    transparent 80%) !important;
+}
+
+/* Vanta net is faint; lift it slightly so the green mesh reads on white. */
+.hero__vanta { opacity: 0.5; }
+
+/* Soften the heavy dark drop-shadows that were tuned for a black canvas. */
+.pricing-card,
+.pricing-card--recommended,
+.work-card {
+  box-shadow: 0 18px 40px -28px rgba(15, 23, 42, 0.25) !important;
+}
+
+/* ------------------------------------------------------------
+   Reversed founder card (Jack) — image on the RIGHT.
+   Content column first in the DOM, image second; mirror the
+   grid track order and the decorative green offset frame.
+   ------------------------------------------------------------ */
+.founder--reverse .founder__inner {
+  grid-template-columns: 1fr auto;
+}
+.founder--reverse .founder__frame {
+  transform: translate(-14px, 14px);
+}
+/* Jack's portrait: zoom in ~15%, anchored at the top edge so the
+   top of the frame stays put and the lower section is cropped. */
+.founder--reverse .founder__photo img {
+  transform: scale(1.15);
+  transform-origin: top center;
+}
+/* Pull the two founder sections closer so they read as a pair. */
+.founder--reverse {
+  padding-top: 0;
+}
+@media (max-width: 768px) {
+  /* On mobile both stack image-over-content; reorder so Jack's
+     photo sits above his copy like Nick's does. */
+  .founder--reverse .founder__inner {
+    grid-template-columns: 1fr;
+  }
+  .founder--reverse .founder__image-wrap {
+    order: -1;
+  }
+}
