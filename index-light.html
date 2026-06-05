@@ -156,43 +156,50 @@
         </div>
       </section>
 
-      <!-- FOUNDER PROFILE -->
-      <section class="founder" id="founder">
-        <div class="container founder__inner">
-          <div class="founder__image-wrap">
+      <!-- FOUNDERS — Nick & Jack side by side, shared copy between them.
+           DOM order is the mobile "sandwich" (Nick photo, Nick title, copy,
+           Jack title, Jack photo); the desktop grid remaps it into three
+           columns with the copy spanning the middle. -->
+      <section class="founder founders-duo" id="founder">
+        <div class="container founders-duo__inner">
+
+          <!-- Nick — portrait -->
+          <div class="founder__image-wrap founders-duo__photo founders-duo__photo--nick">
             <div class="founder__frame"></div>
             <div class="founder__photo">
               <img src="images/founder branded.png" alt="Nick — Founder of WeCompound" width="480" height="560" loading="lazy">
               <span class="tooth-glint" aria-hidden="true"></span>
             </div>
           </div>
-          <div class="founder__content">
-            <span class="eyebrow">Meet the founder</span>
+
+          <!-- Nick — name & role -->
+          <div class="founders-duo__title founders-duo__title--nick">
             <h2 class="founder__name">Nick</h2>
             <p class="founder__role">Founder &amp; Director</p>
-            <p class="founder__bio">I started WeCompound because I couldn't unsee it: new technology means a small, sharp team can now do what used to take an entire department, and ship in weeks, not quarters. So that's what we do. We get under the hood, actually understand your business, then get to building everything you need to compound online.</p>
-            <a href="contact.html" class="btn-primary" style="margin-top: var(--space-lg);">Work with me</a>
           </div>
-        </div>
-      </section>
 
-      <!-- FOUNDER PROFILE — Jack (reversed layout) -->
-      <section class="founder founder--reverse" id="founder-jack">
-        <div class="container founder__inner">
-          <div class="founder__content">
-            <span class="eyebrow">Meet the founder</span>
+          <!-- Shared copy — sits between the two portraits -->
+          <div class="founder__content founders-duo__copy">
+            <span class="eyebrow">Meet the founders</span>
+            <p class="founder__bio">We started WeCompound because we couldn't unsee it: new technology means a small, sharp team can now do what used to take an entire department, and ship in weeks, not quarters. So that's what we do. We get under the hood, actually understand your business, then get to building everything you need to compound online.</p>
+            <a href="contact.html" class="btn-primary" style="margin-top: var(--space-lg);">Work with us</a>
+          </div>
+
+          <!-- Jack — name & role -->
+          <div class="founders-duo__title founders-duo__title--jack">
             <h2 class="founder__name">Jack</h2>
             <p class="founder__role">Design &amp; Research</p>
-            <p class="founder__bio">I'm the one in the weeds before a single pixel is placed — mapping where the demand actually lives, what people are searching for, and which markets are wide open. Then I build. Working hand-in-hand with AI, I can take a niche from raw research to a finished, ranking website in days, holding the whole thing to a standard that used to need a studio full of people. That's the bet behind WeCompound: stay small, stay sharp, and let good design and real strategy do the compounding.</p>
-            <a href="contact.html" class="btn-primary" style="margin-top: var(--space-lg);">Work with me</a>
           </div>
-          <div class="founder__image-wrap">
+
+          <!-- Jack — portrait -->
+          <div class="founder__image-wrap founders-duo__photo founders-duo__photo--jack">
             <div class="founder__frame"></div>
             <div class="founder__photo">
               <img src="images/jackprofile.png" alt="Jack — Design &amp; Research at WeCompound" width="480" height="560" loading="lazy">
               <span class="tooth-glint" aria-hidden="true"></span>
             </div>
           </div>
+
         </div>
       </section>
 

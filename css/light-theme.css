@@ -48,33 +48,72 @@
 }
 
 /* ------------------------------------------------------------
-   Reversed founder card (Jack) — image on the RIGHT.
-   Content column first in the DOM, image second; mirror the
-   grid track order and the decorative green offset frame.
+   Combined founders block — Nick & Jack side by side with the
+   shared "We started…" copy sitting between the two portraits.
+
+   The DOM is authored in the mobile "sandwich" order:
+     Nick photo → Nick title → copy → Jack title → Jack photo
+   Desktop remaps it into three columns (portrait + title in the
+   outer columns, copy spanning the middle) via grid-template-areas.
    ------------------------------------------------------------ */
-.founder--reverse .founder__inner {
-  grid-template-columns: 1fr auto;
+.founders-duo__inner {
+  display: grid;
+  align-items: center;
+  gap: clamp(1.25rem, 3vw, 2.25rem) clamp(2rem, 5vw, 4.5rem);
+  grid-template-columns: auto minmax(260px, 1fr) auto;
+  grid-template-areas:
+    "nphoto copy jphoto"
+    "ntitle copy jtitle";
 }
-.founder--reverse .founder__frame {
-  transform: translate(-14px, 14px);
+.founders-duo__photo--nick { grid-area: nphoto; }
+.founders-duo__photo--jack { grid-area: jphoto; }
+.founders-duo__title--nick { grid-area: ntitle; }
+.founders-duo__title--jack { grid-area: jtitle; }
+.founders-duo__copy        { grid-area: copy; }
+
+/* Slightly smaller portraits so three columns breathe. Photos sit at
+   the bottom of the top row, titles at the top of the bottom row, so
+   each name reads directly beneath its portrait. */
+.founders-duo__photo.founder__image-wrap {
+  width: clamp(200px, 22vw, 320px);
+  align-self: end;
+  justify-self: center;
 }
-/* Jack's portrait: zoom in ~15%, anchored at the top edge so the
-   top of the frame stays put and the lower section is cropped. */
-.founder--reverse .founder__photo img {
+.founders-duo__title {
+  align-self: start;
+  text-align: center;
+}
+.founders-duo__title .founder__name { margin-top: 0; }
+
+/* Shared copy, centered between the two portraits. */
+.founders-duo__copy {
+  max-width: 460px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Jack's portrait keeps its ~15% top-anchored crop. */
+.founders-duo__photo--jack .founder__photo img {
   transform: scale(1.15);
   transform-origin: top center;
 }
-/* Pull the two founder sections closer so they read as a pair. */
-.founder--reverse {
-  padding-top: 0;
-}
+
+/* Narrow devices: collapse to a single-column "sandwich" in DOM order —
+   Nick photo, Nick title, copy, Jack title, Jack photo. */
 @media (max-width: 768px) {
-  /* On mobile both stack image-over-content; reorder so Jack's
-     photo sits above his copy like Nick's does. */
-  .founder--reverse .founder__inner {
+  .founders-duo__inner {
     grid-template-columns: 1fr;
+    justify-items: center;
+    grid-template-areas:
+      "nphoto"
+      "ntitle"
+      "copy"
+      "jtitle"
+      "jphoto";
   }
-  .founder--reverse .founder__image-wrap {
-    order: -1;
+  .founders-duo__copy {
+    margin-block: clamp(1rem, 5vw, 2.25rem);
   }
 }
