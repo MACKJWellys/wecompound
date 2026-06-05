@@ -117,3 +117,121 @@
     margin-block: clamp(1rem, 5vw, 2.25rem);
   }
 }
+
+/* ------------------------------------------------------------
+   Services collage — "Four ways we compound your growth".
+   A centred 2×2 of cards, each pairing its copy with a dedicated
+   slot for isometric green line-art (.svc-card__art). The right
+   column is nudged down (via margin, not transform, so the GSAP
+   reveal that animates transform doesn't undo it) for a collage
+   rhythm. Keeps .bento-grid / .card so the existing draw-in,
+   stagger-reveal and mobile-glow JS keep working.
+   ------------------------------------------------------------ */
+.services-overview .eyebrow {
+  display: block;
+  text-align: center;
+}
+.services-overview .section-title {
+  text-align: center;
+}
+
+.bento-grid.svc-collage {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+  max-width: 920px;
+  margin-inline: auto;
+  margin-top: clamp(2rem, 4vw, 3rem);
+  align-items: start;
+}
+/* Drop the right column for an arranged, off-grid collage feel. */
+.bento-grid.svc-collage > .svc-card:nth-child(even) {
+  margin-top: clamp(1.5rem, 4vw, 3rem);
+}
+
+.svc-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* ---- Isometric art slot (the 4 spaces) ---- */
+.svc-card__art {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--hairline-strong);
+  background-color: var(--surface-2);
+  background-image:
+    repeating-linear-gradient( 30deg, rgba(22, 163, 74, 0.05) 0 1px, transparent 1px 24px),
+    repeating-linear-gradient(-30deg, rgba(22, 163, 74, 0.05) 0 1px, transparent 1px 24px);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.card--featured .svc-card__art {
+  background-color: var(--surface-3);
+}
+
+/* When the real art is dropped in, it fills the slot and the hint hides. */
+.svc-card__art img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.svc-card__art:has(img) {
+  border-style: solid;
+  background-image: none;
+}
+.svc-card__art:has(img) .svc-card__art-ph {
+  display: none;
+}
+
+.svc-card__art-ph {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  opacity: 0.55;
+  transition: opacity 0.3s ease;
+}
+.card:hover .svc-card__art-ph,
+.card.is-glowing .svc-card__art-ph {
+  opacity: 0.8;
+}
+.svc-card__art-ph svg {
+  width: clamp(60px, 9vw, 86px);
+  height: auto;
+}
+.svc-card__art-ph svg path {
+  stroke: var(--primary);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.svc-card__art-ph em {
+  font-style: normal;
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-tertiary);
+}
+
+.svc-card__body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- Narrow devices: single centred column, no stagger ---- */
+@media (max-width: 768px) {
+  .bento-grid.svc-collage {
+    grid-template-columns: 1fr;
+    max-width: 440px;
+  }
+  .bento-grid.svc-collage > .svc-card:nth-child(even) {
+    margin-top: 0;
+  }
+}
