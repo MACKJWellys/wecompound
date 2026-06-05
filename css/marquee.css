@@ -110,6 +110,7 @@
 .bm-img--vw   { height: 30px; }   /* long title + tagline */
 .bm-img--cbt  { height: 52px; }   /* stacked CBT in CPT */
 .bm-img--maxim{ height: 44px; }   /* stacked MAXIM/MOTORS wordmark */
+.bm-img--matcha{ height: 52px; }  /* round matcha-master mascot */
 
 /* ---- PrivateBusHire Ireland — Barlow Condensed, navy + gold ---- */
 .bm-pbh {
@@ -235,6 +236,18 @@
   letter-spacing: 0;
   text-transform: none;
   color: #7baa8e;
+}
+
+/* ---- The Matcha Masters — navbar logo replica (mascot + Fraunces wordmark) ---- */
+/* Mirrors the site's own .logo: Fraunces 900, tight tracking, deep green ink. */
+.bm-matcha {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 900;
+  font-size: 1.3rem;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: #16271c;
+  white-space: nowrap;
 }
 
 /* ============================================================
